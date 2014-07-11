@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EMD Example GUI</title>
+
+  <!-- Bootstrap -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <nav class="navbar navbar-inverse" role="navigation">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">EMD</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">Health</a></li>
+          <li><a href="#">Metrics</a></li>
+          <li><a href="#">Distribution</a></li>
+          <li><a href="#">Management</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+  <!-- Health -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Health <small>Health of the entire distribution</small></h3>
+    </div>
+    <div class="panel-body">
+      Healthy
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Metrics <small>Top metrics to watch out for, helps to reason why the distribution may be unhealthy</small></h3>
+    </div>
+    <div class="panel-body">
+      <!-- Metrics Table -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>State</td>
+            <td>Running</td>
+            <td>2 July 2334 09:23:2323</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Distribution -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Distribution <small>Table of each node/workers on each node in the distribution</small></h3>
+    </div>
+    <div class="panel-body">
+      <!-- Distribution Table -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Hostname</th>
+            <th>IP</th>
+            <th># Workers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>localhost</td>
+            <td>127.0.0.1</td>
+            <td>5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Management -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Management <small>Management commands that can be performed on the distribution</small></h3>
+    </div>
+    <div class="panel-body">
+      Commands can be, stop, start, and restart the entire distribution or just a specific node.
+    </div>
+  </div>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>
