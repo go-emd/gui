@@ -1,5 +1,11 @@
 {
     "distributions": [
-        "C:\Users\jelathro\Documents\Go\boilerplate\config.json"
+        {
+            "Name": "Boilerplate",
+            "GUI_port": 30000,
+            "Hosts": [
+                "localhost"
+            ]
+        }
     ]
 }
