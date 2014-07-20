@@ -1,11 +1,13 @@
 {
-    "distributions": [
-        {
-            "Name": "Boilerplate",
-            "GUI_port": 30000,
-            "Hosts": [
-                "localhost"
-            ]
-        }
-    ]
+    "conf": {
+        "dists": [
+            {
+                "Name": "Boilerplate",
+                "GUI_port": 30000,
+                "Hosts": [
+                    "localhost"
+                ]
+            }
+        ]
+    }
 }

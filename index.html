@@ -45,13 +45,13 @@
     <!-- Health -->
     <a id="health"></a>
     <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Health <small>Health of the entire distribution</small>
-          <button class="text-right pull-right">Refresh</button></h3>
-    </div>
-    <div class="panel-body">
-      Healthy
-    </div>
+        <div class="panel-heading">
+          <h3 class="panel-title">Health <small>Health of the entire distribution</small>
+              <button id="health-refresh" class="text-right pull-right">Refresh</button></h3>
+        </div>
+        <div id="health-html" class="panel-body">
+          Healthy
+        </div>
     </div>
 
     <!-- Metrics -->
@@ -59,28 +59,11 @@
     <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Metrics <small>Top metrics to watch out for, helps to reason why the distribution may be unhealthy</small>
-          <button class="text-right pull-right">Refresh</button></h3>
+          <button id="metrics-refresh" class="text-right pull-right">Refresh</button></h3>
     </div>
-    <div class="panel-body">
+    <div id="metrics-html" class="panel-body">
       <!-- Metrics Table -->
-      <table class="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Value</th>
-            <th>Timestamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>State</td>
-            <td>Running</td>
-            <td>2 July 2334 09:23:2323</td>
-          </tr>
-        </tbody>
-      </table>
+      Press refresh to see these metrics.
     </div>
     </div>
 
@@ -89,26 +72,11 @@
     <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Distribution <small>Table of each node/workers on each node in the distribution</small>
-          <button class="text-right pull-right">Refresh</button></h3>
+          <!--<button id="distribution-refresh" class="text-right pull-right">Refresh</button>--></h3>
     </div>
-    <div class="panel-body">
+    <div id="distribution-html" class="panel-body">
       <!-- Distribution Table -->
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Hostname</th>
-            <th>IP</th>
-            <th># Workers</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>localhost</td>
-            <td>127.0.0.1</td>
-            <td>5</td>
-          </tr>
-        </tbody>
-      </table>
+      Loading...
     </div>
     </div>
 
@@ -117,11 +85,17 @@
     <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Management <small>Management commands that can be performed on the distribution</small>
-          <button class="text-right pull-right">Refresh</button></h3>
-
+          <!--<button id="management-refresh" class="text-right pull-right">Refresh</button>--></h3>
     </div>
-    <div class="panel-body">
-      Commands can be, stop, start, and restart the entire distribution or just a specific node.
+    <div id="management" class="panel-body">
+      <p>
+          Here are a couple that you can use on this distribution as a whole.  Future work can enable only stopping
+          certain workers on each node but for now this is all that is available:
+          <ul>
+            <li><a id="mgmt-stop" href="javascript:;">Stop (called twice to shutdown distribution entirely).</a></li>
+            <li><a id="mgmt-start" href="javascript:;">Start the workers.</a></li>
+          </ul>
+      </p>
     </div>
     </div>
 
@@ -131,10 +105,141 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
     <script>
-        $('body').ready(function(){
-            $.getJSON("/config.json", function(data){
-                console.log(data);
+        function updateHealth(event){
+            dist = event.data.dist;
+
+            $.getJSON("http://"+dist.Hosts[0]+":"+dist.GUI_port+"/status", function(health){
+                $("#health-html").html(health.message);
+                console.log("Successfully loaded health of " + dist.Name + ".");
             });
+        }
+
+        function updateMetrics(event){
+            var dist = event.data.dist;
+
+            $.getJSON("http://"+dist.Hosts[0]+":"+dist.GUI_port+"/metrics", function(metrics){
+                var tbody = "";
+                var num = 0;
+
+                for(var worker in metrics.message){
+                    if(metrics.message.hasOwnProperty(worker)){
+                        workerName = worker;
+                        worker = metrics.message[worker];
+
+                        for(var metric in worker){
+                            if(worker.hasOwnProperty(metric)){
+                                num++;
+                                tbody += ""+
+                                    "<tr>"+
+                                            "<td>"+num+"</td>"+
+                                            "<td>"+workerName+"</td>"+
+                                            "<td>"+metric+"</td>"+
+                                            "<td>"+worker[metric]+"</td>"+
+                                    "</tr>";
+                            }
+                        }
+                    }
+                }
+
+                $("#metrics-html").html(''+
+                     '<table class="table">'+
+                        '<thead>'+
+                          '<tr>'+
+                            '<th>#</th>'+
+                            '<th>Worker</th>'+
+                            '<th>Metric</th>'+
+                            '<th>Value</th>'+
+                          '</tr>'+
+                        '</thead>'+
+                        '<tbody>'+
+                          tbody+
+                        '</tbody>'+
+                      '</table>'+
+                '');
+
+                console.log("Successfully loaded metrics of " + dist.Name + ".");
+            });
+        }
+
+        function updateDistribution(dist){
+            var tbody = "";
+
+            for(var i = 0; i < dist.Nodes.length; i++){
+                tbody += "<tr><td>"+dist.Nodes[i].Hostname+"</td>";
+                tbody += "<td>"+dist.Nodes[i].Workers.length+"</td></tr>";
+            }
+
+            $("#distribution-html").html(''+
+              '<table class="table">'+
+                '<thead>'+
+                  '<tr>'+
+                    '<th>Hostname/IP</th>'+
+                    '<th># Workers</th>'+
+                  '</tr>'+
+                '</thead>'+
+                '<tbody>'+
+                  tbody+
+                '</tbody>'+
+              '</table>');
+        }
+
+        function updateManagement(dist){
+            var nodes = "[";
+            for(var i = 0; i < dist.Nodes.length; i++){
+                nodes += '"'+dist.Nodes[i].Hostname+'"';
+                nodes += (i != dist.Nodes.length-1) ? "," : "";
+            }
+            nodes += "]";
+
+            $("#mgmt-stop").attr("href", 'javascript:sendCommand('+nodes+', '+dist.GUI_port+', "stop");');
+            $("#mgmt-start").attr("href", 'javascript:sendCommand('+nodes+', '+dist.GUI_port+', "start");');
+        }
+
+        function sendCommand(nodes, port, command){
+            window.commandResp = [];
+
+            $.ajaxSetup({'async':false});
+            for(var i = 0; i < nodes.length; i++){
+                $.getJSON("http://"+nodes[i]+":"+port+"/"+command, function(resp){
+                    //window.commandResp.push(resp);
+                    alert("Response-success: " + resp.success + "\nResponse-message:" + resp.message);
+                });
+            }
+            $.ajaxSetup({'async':true});
+
+            //return window.commandResp.message;
+        }
+
+        $('body').ready(function(){
+            window.config = {};
+            window.dists = [];
+
+            // Get the gui config
+            $.ajaxSetup({'async':false});
+            $.getJSON("/config.json", function(conf){
+                window.config = conf.conf;
+                console.log("Loaded the gui config file.");
+
+                for (var i = 0; i < window.config.dists.length; i++){
+                    $.getJSON("http://"+window.config.dists[i].Hosts[0]+":"+window.config.dists[i].GUI_port+"/config", function(dist){
+                        window.dists.push(dist.message);
+                        console.log("Loaded the " + window.config.dists[i].Name + " config file.");
+
+                        // Set up the refresh handlers
+                        $("#health-refresh").click({dist: window.config.dists[i]}, updateHealth);
+                        $("#metrics-refresh").click({dist: window.config.dists[i]}, updateMetrics);
+
+                        // Set up management stuff
+                        updateManagement(dist.message);
+
+                        // Set up the distribution stuff
+                        updateDistribution(dist.message);
+                    });
+                }
+            });
+            $.ajaxSetup({'async':true});
+
+            console.log("Initialization complete.");
         });
     </script>
 </body>
